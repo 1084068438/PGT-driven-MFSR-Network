@@ -78,18 +78,14 @@ if __name__ == '__main__':
         print(datapath)
         lr_sequence = []
         if model_index == 4 or model_index == 5 or model_index == 6:
-            # 读取高分辨率帧
             num = central_index
-            hr_frame = cv2.imread(f"{datapath}/{num}_warped.png", 0)  # 灰度图%data1_3_11
+            hr_frame = cv2.imread(f"{datapath}/{num}_warped.png", 0)
             # print(hr_frame.shape)
-            # hr_frame = hr_frame[100:196, 200:296]
-            # 提取补丁（实际需随机采样）
             h, w = hr_frame.shape
             hr_frame = normalized(hr_frame).astype(np.float32)
             h_scale = scale_factor
             w_scale = scale_factor
-            # 生成低分辨率补丁
-            lr_patch = dowmsampling(hr_frame, h_scale, w_scale, Sample_Flag)  # True插值， False零填充
+            lr_patch = dowmsampling(hr_frame, h_scale, w_scale, Sample_Flag) 
             lr_patch = normalized(lr_patch)
             lr_patch = transform(lr_patch)
             lr_patch = lr_patch.unsqueeze(0)
@@ -97,22 +93,18 @@ if __name__ == '__main__':
             hr_center = transform(hr_frame).to(device)
         else:
             for t in range(num_frames):
-                # 读取高分辨率帧
                 num = t+start_index
-                hr_frame = cv2.imread(f"{datapath}/{num}_warped.png", 0)  # 灰度图%data1_3_11
-                # 提取补丁（实际需随机采样）
+                hr_frame = cv2.imread(f"{datapath}/{num}_warped.png", 0)  
                 # hr_frame = hr_frame[:,129:640]
                 hr_frame = normalized(hr_frame).astype(np.float32)
                 h_scale = scale_factor
                 w_scale = scale_factor
-                # 生成低分辨率补丁
-                lr_patch = dowmsampling(hr_frame, h_scale, w_scale, True)  # True插值， False零填充
+                lr_patch = dowmsampling(hr_frame, h_scale, w_scale, True)
                 lr_patch = normalized(lr_patch)
                 hr_frames.append(transform(hr_frame))
                 lr_patches.append(transform(lr_patch))
-            # 组装输入：[num_frames, 1, patch_size, patch_size]
             lr_sequence = torch.stack(lr_patches)
-            hr_center = hr_frames[num_frames // 2]  # 中心高分辨率帧
+            hr_center = hr_frames[num_frames // 2] 
             lr_center = lr_patches[num_frames // 2]
             lr_sequence = lr_sequence.unsqueeze(0).to(device)
         if model_index == 6:
@@ -123,8 +115,6 @@ if __name__ == '__main__':
                 hr_pred = generator(lr_sequence)
         result = hr_pred.squeeze().detach().cpu().numpy()
         result = normalized(result)
-        #指标计算
-        # 计算LPIPS（值越小表示越相似）
         lpips_loss_fn = lpips.LPIPS(net='vgg',verbose=False).to(device)
         lpips_value = lpips_loss_fn(hr_pred, hr_center.unsqueeze(0).to(device)).item()
         psnr_count = PSNRCalculator().to(device)
@@ -142,5 +132,6 @@ if __name__ == '__main__':
     var_psnr = statistics.pstdev(total_psnr)
     var_lpips = statistics.pstdev(total_lpips)
     print(f"{maen_ssim:.4f}-{var_ssim:.4f}, {maen_psnr:.2f}-{var_psnr:.2f}, {maen_lpips:.4f}-{var_lpips:.4f}")
+
 
 
