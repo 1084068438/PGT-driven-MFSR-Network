@@ -40,7 +40,7 @@ class VSRRDN(nn.Module):
         # Output layer
         self.conv3 = nn.Conv3d(channels, out_channels, 3, 1, 1)
     def forward(self, x):
-        # 输入x [B, T, C, H, W]
+        # x [B, T, C, H, W]
         x = x.permute(0, 2, 1, 3, 4).contiguous()  # [B, C, T, H, W]
         out1 = self.conv1(x) # [B, C, T, H, W]
         out = self.conv2(out1) # [B, C, T, H, W]
@@ -97,7 +97,7 @@ class VSRRDN_woSTCSA(nn.Module):
         # Output layer
         self.conv3 = nn.Conv3d(channels, out_channels, 3, 1, 1)
     def forward(self, x):
-        # 输入x [B, T, C, H, W]
+        # x [B, T, C, H, W]
         x = x.permute(0, 2, 1, 3, 4).contiguous()  # [B, C, T, H, W]
         out1 = self.conv1(x) # [B, C, T, H, W]
         out = self.conv2(out1) # [B, C, T, H, W]
@@ -225,7 +225,6 @@ class globalAttention(nn.Module):
         H, D = self.heads, self.dim
         d = self.hidden_dim
         # assert h % self.patch_size == 0 and w % self.patch_size == 0, \
-        #     f"输入特征的高({h})和宽({w})必须能被patch_size({self.patch_size})整除"
         n = (h // self.patch_size) * (w // self.patch_size)
 
         patch2feat = torch.nn.Fold(output_size=(h, w), kernel_size=self.patch_size, padding=0, stride=self.patch_size)
@@ -268,4 +267,5 @@ if __name__ == '__main__':
     sequence = torch.randn(2,3,1,78,252)
     net=VSRRDN(upscale_factor=4)
     a = net(sequence)
+
     print(a.size())
