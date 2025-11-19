@@ -54,7 +54,7 @@ if __name__ == '__main__':
         hr_frame = cv2.imread(f"{'Result/Test/data1'}/{num}_warped.png", 0)  # 灰度图%data1_3_11
         # 提取补丁（实际需随机采样）
         a = 200
-        hr_frame = hr_frame[:,a:a+768] #data2-500-240,data1-200-768
+        hr_frame = hr_frame[:,a:a+768] 
         hr_frame = normalized(hr_frame).astype(np.float32)
         h_scale = scale_factor
         w_scale = scale_factor
@@ -136,4 +136,5 @@ if __name__ == '__main__':
     # cv2.imwrite('Result/clear/HR2_{}x.png'.format(scale_factor), hr_uint8)
     # cv2.imwrite('Result/clear/LR2_{}x.png'.format(scale_factor), lr_uint8)
     cv2.imwrite('Result/clear/Propose_{}x.png'.format(scale_factor), result_uint8)
+
 
